@@ -1,0 +1,29 @@
+function Get-InstalledApps {
+    param (
+        [Parameter(ValueFromPipeline=$true)]
+        [string[]]$ComputerName = $env:COMPUTERNAME,
+        [string]$NameRegex = ''
+    )
+    
+    foreach ($comp in $ComputerName) {
+        $keys = '','\Wow6432Node'
+        foreach ($key in $keys) {
+            try {
+                $reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $comp)
+                $apps = $reg.OpenSubKey("SOFTWARE$key\Microsoft\Windows\CurrentVersion\Uninstall").GetSubKeyNames()
+            } catch {
+                continue
+            }
+
+            foreach ($app in $apps) {
+                $program = $reg.OpenSubKey("SOFTWARE$key\Microsoft\Windows\CurrentVersion\Uninstall\$app")
+                $name = $program.GetValue('DisplayName')
+                if ($name -and $name -match $NameRegex) {
+                    [pscustomobject]@{
+                        list = $comp, $name,$program.GetValue('DisplayVersion'),$program.GetValue('InstallDate')
+                    }
+                }
+            }
+        }
+    }
+}
