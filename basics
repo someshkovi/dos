@@ -1,0 +1,5 @@
+#open cmd as other user:
+cmd /k runas /user:<domain>\<username> cmd
+
+#get uptime of remote pc:
+SystemInfo /s <ip/hostanme> | find "Boot Time:"
