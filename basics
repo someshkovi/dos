@@ -3,3 +3,10 @@ cmd /k runas /user:<domain>\<username> cmd
 
 #get uptime of remote pc:
 SystemInfo /s <ip/hostanme> | find "Boot Time:"
+
+# enable remote desktop remotely
+get ps tools 
+c:\psexec \\remote_machine_name cmd
+netsh advfirewall firewall set rule group=”remote desktop” new enable=Yes
+
+reg add “HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server” /v fDenyTSConnections /t REG_DWORD /d 0 /f
